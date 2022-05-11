@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
-import pokemon from './pokemon.json';
 import PropTypes from "prop-types"
+import styled from "@emotion/styled"
 
 const PokemonRow = ({ pokemon, onSelect }) => (
   <tr
@@ -58,21 +58,44 @@ PokemonRow.propTypes = {
   onSelect: PropTypes.func.isRequired,
 }
 
+const Title = styled.h1`
+  color: red;
+  text-align: center;
+`;
+
+const TwoColumnLayout = styled.div`
+    display: grid;
+    grid-template-columns: 70% 30%;
+    grid-column-gap: 1rem;
+`;
+
+const Container = styled.div`
+  margin: auto;
+  width: 800px;
+  padding: 1rem;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  font-size: x-large;
+  padding: 0.2rem;
+`;
+
 function App() {
   const [filter, setFilter] = React.useState("");
+  const [pokemon, pokemonSet] = React.useState([]);
   const [selectedItem, setSelectedItem] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch("http://localhost:3000/pokemon.json")
+    .then(resp => resp.json())
+    .then(data => pokemonSet(data))
+  }, []);
+
   return (
-    <div style={{
-      margin: "auto",
-      width: 800,
-      paddingTop: "1rem"
-    }}>
-      <h1 className='title'>Hello World</h1>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "70% 30%",
-        gridColumnGap: "1rem"
-      }}>        
+    <Container>
+      <Title>Hello World</Title>
+      <TwoColumnLayout>        
       <div>
         <input value={filter} onChange={(event) => setFilter(event.target.value)} />
           <table width="100%">
@@ -94,9 +117,9 @@ function App() {
         {selectedItem && (
           <PokemonInfo {...selectedItem} />
         )}
-      </div>
+      </TwoColumnLayout>
 
-    </div>
+    </Container>
   );
 }
 
