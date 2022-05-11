@@ -75,7 +75,7 @@ const Container = styled.div`
   padding: 1rem;
 `;
 
-const Input = styled.input`
+const Input = styled.Input`
   width: 100%;
   font-size: x-large;
   padding: 0.2rem;
@@ -97,7 +97,7 @@ function App() {
       <Title>Hello World</Title>
       <TwoColumnLayout>        
       <div>
-        <input value={filter} onChange={(event) => setFilter(event.target.value)} />
+        <Input value={filter} onChange={(event) => setFilter(event.target.value)} />
           <table width="100%">
             <thead>
               <tr>
