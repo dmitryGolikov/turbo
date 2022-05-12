@@ -82,24 +82,32 @@ const Input = styled.input`
   padding: 0.2rem;
 `;
 
-function App() {
-  const [filter, setFilter] = React.useState("");
-  const [pokemon, pokemonSet] = React.useState([]);
-  const [selectedItem, setSelectedItem] = React.useState(null);
-
-  React.useEffect(() => {
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filter: "",
+      pokemon: [],
+      selectedItem : null
+    }
+  }
+  componentDidMount() {
     fetch("http://localhost:3000/turbo/pokemon.json")
-    .then(resp => resp.json())
-    .then(data => pokemonSet(data))
-    .catch(error => (console.log(error)))
-  }, []);
-
-  return (
-    <Container>
+  .then(resp => resp.json())
+  .then(pokemon => this.setState({ 
+    ...this.state,
+    pokemon
+  }))
+  .catch(error => (console.log(error)))    
+  }
+  render() {
+return (<Container>
       <Title>Hello World</Title>
       <TwoColumnLayout>        
       <div>
-        <Input value={filter} onChange={(event) => setFilter(event.target.value)} />
+        <Input value={this.state.filter} onChange={(event) => this.setState({
+          ...this.state, filter: event.target.value
+        })} />
           <table width="100%">
             <thead>
               <tr>
@@ -108,21 +116,48 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {pokemon
-                .filter(pokemon => pokemon.name.english.toLowerCase().includes(filter)).map(pokemon => (
-                <PokemonRow key={[pokemon.id, pokemon.name].join(".")} pokemon={pokemon} onSelect={(pokemon) => setSelectedItem(pokemon)} />
+              {this.state.pokemon
+                .filter(pokemon => pokemon.name.english.toLowerCase().includes(this.state.filter)).map(pokemon => (
+                <PokemonRow key={[pokemon.id, pokemon.name].join(".")} pokemon={pokemon} onSelect={(pokemon) => this.setState({
+                  ...this.state, selectedItem: pokemon
+                })} />
               ))}
             </tbody>
           </table>
         </div>
         
-        {selectedItem && (
-          <PokemonInfo {...selectedItem} />
+        {this.state.selectedItem && (
+          <PokemonInfo {...this.state.selectedItem} />
         )}
       </TwoColumnLayout>
 
-    </Container>
-  );
+    </Container>);
+  }
 }
+
+// function App() {
+//   const [filter, setFilter] = React.useState("");
+//   const [pokemon, pokemonSet] = React.useState([]);
+//   const [selectedItem, setSelectedItem] = React.useState(null);
+
+//   React.useEffect(() => {
+//     fetch("http://localhost:3000/turbo/pokemon.json")
+//     .then(resp => resp.json())
+//     .then(data => pokemonSet(data))
+//     .catch(error => (console.log(error)))
+//   }, []);
+
+//   return (
+    
+//   );
+// }
+
+// React.useEffect(() => {
+//   fetch("http://localhost:3000/turbo/pokemon.json")
+//   .then(resp => resp.json())
+//   .then(data => pokemonSet(data))
+//   .catch(error => (console.log(error)))
+// }, []);
+
 
 export default App;
