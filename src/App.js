@@ -1,7 +1,8 @@
 import React from 'react';
 import './App.css';
-import PropTypes from "prop-types"
-import styled from "@emotion/styled"
+import PropTypes from "prop-types";
+import { Button } from '@mui/material';
+import styled from "@emotion/styled";
 
 const PokemonRow = ({ pokemon, onSelect }) => (
   <tr
@@ -10,7 +11,7 @@ const PokemonRow = ({ pokemon, onSelect }) => (
   <td>{ pokemon.name.english }</td>
   <td>{ pokemon.type.join(", ")}</td>
   <td>
-    <button onClick={() => onSelect(pokemon)}>Select</button>
+    <Button variant='contained' color='primary' onClick={() => onSelect(pokemon)}>Select</Button>
   </td>
 </tr>
 );
@@ -75,7 +76,7 @@ const Container = styled.div`
   padding: 1rem;
 `;
 
-const Input = styled.Input`
+const Input = styled.input`
   width: 100%;
   font-size: x-large;
   padding: 0.2rem;
@@ -87,9 +88,10 @@ function App() {
   const [selectedItem, setSelectedItem] = React.useState(null);
 
   React.useEffect(() => {
-    fetch("http://localhost:3000/pokemon.json")
+    fetch("http://localhost:3000/turbo/pokemon.json")
     .then(resp => resp.json())
     .then(data => pokemonSet(data))
+    .catch(error => (console.log(error)))
   }, []);
 
   return (
