@@ -1,62 +1,31 @@
 import React from 'react';
-import './App.css';
-import PropTypes from "prop-types";
-import { Button } from '@mui/material';
 import styled from "@emotion/styled";
+import PokemonContext from './PokemonContext';
+import PokemonInfo from './components/PokemonInfo';
+import PokemonFilter from './components/PokemonFilter';
+import PokemonTable from './components/PokemonTable';
+import { CssBaseline } from '@mui/material';
 
-const PokemonRow = ({ pokemon, onSelect }) => (
-  <tr
-  key={[pokemon.id, pokemon.name].join(".")}
->
-  <td>{ pokemon.name.english }</td>
-  <td>{ pokemon.type.join(", ")}</td>
-  <td>
-    <Button variant='contained' color='primary' onClick={() => onSelect(pokemon)}>Select</Button>
-  </td>
-</tr>
-);
-
-const PokemonInfo = ({name, base}) => (
-  <div>
-    <h2>{name.english}</h2>
-    <table>
-    <tbody>
-      {
-        Object.keys(base).map(key => (
-          <tr key={key}>
-            <td>{key}</td>
-            <td>{base[key]}</td>
-          </tr>
-        ))
+const pokemonReducer = (state, action) => {
+  switch(action.type) {
+    case 'SET_FILTER':
+      return {
+        ...state,
+        filter: action.payload
       }
-      </tbody>
-    </table>
-  </div>
-)
-
-PokemonInfo.propTypes = {
-  name: PropTypes.shape({
-    english: PropTypes.string.isRequired,
-  }),
-  base: PropTypes.shape({
-    HP: PropTypes.number.isRequired,
-    Attack: PropTypes.number.isRequired,
-    Defense: PropTypes.number.isRequired,
-    "Sp. Attack": PropTypes.number.isRequired,
-    "Sp. Defense": PropTypes.number.isRequired,
-    Speed: PropTypes.number.isRequired,
-
-  })
-}
-
-PokemonRow.propTypes = {
-  pokemon: PropTypes.shape({
-    name: PropTypes.shape({
-      english: PropTypes.string.isRequired,
-    }),
-    type: PropTypes.arrayOf(PropTypes.string.isRequired),
-  }),
-  onSelect: PropTypes.func.isRequired,
+    case 'SET_POKEMON':
+      return {
+        ...state,
+        pokemon: action.payload
+      }      
+    case 'SET_SELECTED_POKEMON':
+      return {
+        ...state,
+        selectedPokemon: action.payload
+      }
+      default:
+        throw new Error("Unhandled action type");
+    }
 }
 
 const Title = styled.h1`
@@ -70,94 +39,58 @@ const TwoColumnLayout = styled.div`
     grid-column-gap: 1rem;
 `;
 
-const Container = styled.div`
+const PageContainer = styled.div`
   margin: auto;
   width: 800px;
   padding: 1rem;
 `;
 
-const Input = styled.input`
-  width: 100%;
-  font-size: x-large;
-  padding: 0.2rem;
-`;
+function App() {
+  const [filter, setFilter] = React.useState("");
+  const [pokemon, pokemonSet] = React.useState([]);
+  const [selectedPokemon, setSelectedPokemon] = React.useState(null);
+  const [state, dispatch] = React.useReducer(pokemonReducer, {
+    pokemon: [],
+    filter: "",
+    selectedPokemon: null
+  });
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      filter: "",
-      pokemon: [],
-      selectedItem : null
-    }
-  }
-  componentDidMount() {
+  React.useEffect(() => {
     fetch("http://localhost:3000/turbo/pokemon.json")
-  .then(resp => resp.json())
-  .then(pokemon => this.setState({ 
-    ...this.state,
-    pokemon
-  }))
-  .catch(error => (console.log(error)))    
-  }
-  render() {
-return (<Container>
-      <Title>Hello World</Title>
-      <TwoColumnLayout>        
-      <div>
-        <Input value={this.state.filter} onChange={(event) => this.setState({
-          ...this.state, filter: event.target.value
-        })} />
-          <table width="100%">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.pokemon
-                .filter(pokemon => pokemon.name.english.toLowerCase().includes(this.state.filter)).map(pokemon => (
-                <PokemonRow key={[pokemon.id, pokemon.name].join(".")} pokemon={pokemon} onSelect={(pokemon) => this.setState({
-                  ...this.state, selectedItem: pokemon
-                })} />
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {this.state.selectedItem && (
-          <PokemonInfo {...this.state.selectedItem} />
-        )}
-      </TwoColumnLayout>
+    .then(resp => resp.json())
+    .then(data => dispatch({
+      type: 'SET_POKEMON', 
+      payload: data}))
+    .catch(error => (console.log(error)))
+  }, []);
 
-    </Container>);
+  if(!state.pokemon) {
+    return <div>Loading data</div>
   }
+
+  return (
+    <PokemonContext.Provider 
+    value={{ 
+      filter, setFilter,
+      pokemon, pokemonSet,
+      selectedPokemon, setSelectedPokemon,
+      state, dispatch
+    }}>
+      <PageContainer>
+        <CssBaseline />
+        <Title>Hello World</Title>
+        <TwoColumnLayout>        
+        <div>
+            <PokemonFilter />
+            <PokemonTable />
+          </div>
+          
+          <PokemonInfo/>
+        </TwoColumnLayout>
+
+      </PageContainer>   
+    </PokemonContext.Provider>
+  );
 }
-
-// function App() {
-//   const [filter, setFilter] = React.useState("");
-//   const [pokemon, pokemonSet] = React.useState([]);
-//   const [selectedItem, setSelectedItem] = React.useState(null);
-
-//   React.useEffect(() => {
-//     fetch("http://localhost:3000/turbo/pokemon.json")
-//     .then(resp => resp.json())
-//     .then(data => pokemonSet(data))
-//     .catch(error => (console.log(error)))
-//   }, []);
-
-//   return (
-    
-//   );
-// }
-
-// React.useEffect(() => {
-//   fetch("http://localhost:3000/turbo/pokemon.json")
-//   .then(resp => resp.json())
-//   .then(data => pokemonSet(data))
-//   .catch(error => (console.log(error)))
-// }, []);
-
 
 export default App;
