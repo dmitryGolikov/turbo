@@ -1,12 +1,17 @@
 import React from 'react';
 import styled from "@emotion/styled";
-import PokemonContext from './PokemonContext';
 import PokemonInfo from './components/PokemonInfo';
 import PokemonFilter from './components/PokemonFilter';
 import PokemonTable from './components/PokemonTable';
 import { CssBaseline } from '@mui/material';
+import { createStore } from 'redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 
-const pokemonReducer = (state, action) => {
+const pokemonReducer = (state = {
+  pokemon: [],
+  filter: "",
+  selectedPokemon: null,
+}, action) => {
   switch(action.type) {
     case 'SET_FILTER':
       return {
@@ -28,6 +33,8 @@ const pokemonReducer = (state, action) => {
     }
 }
 
+const store = createStore(pokemonReducer);
+
 const Title = styled.h1`
   color: red;
   text-align: center;
@@ -45,15 +52,14 @@ const PageContainer = styled.div`
   padding: 1rem;
 `;
 
-function App() {
-  const [filter, setFilter] = React.useState("");
-  const [pokemon, pokemonSet] = React.useState([]);
-  const [selectedPokemon, setSelectedPokemon] = React.useState(null);
-  const [state, dispatch] = React.useReducer(pokemonReducer, {
-    pokemon: [],
-    filter: "",
-    selectedPokemon: null
-  });
+function App() {  
+  // const [state, dispatch] = React.useReducer(pokemonReducer, {
+  //   pokemon: [],
+  //   filter: "",
+  //   selectedPokemon: null
+  // });
+  const dispatch = useDispatch();
+  const pokemon = useSelector(state => state.pokemon);
 
   React.useEffect(() => {
     fetch("http://localhost:3000/turbo/pokemon.json")
@@ -64,18 +70,11 @@ function App() {
     .catch(error => (console.log(error)))
   }, []);
 
-  if(!state.pokemon) {
+  if(!pokemon) {
     return <div>Loading data</div>
   }
 
   return (
-    <PokemonContext.Provider 
-    value={{ 
-      filter, setFilter,
-      pokemon, pokemonSet,
-      selectedPokemon, setSelectedPokemon,
-      state, dispatch
-    }}>
       <PageContainer>
         <CssBaseline />
         <Title>Hello World</Title>
@@ -89,8 +88,7 @@ function App() {
         </TwoColumnLayout>
 
       </PageContainer>   
-    </PokemonContext.Provider>
   );
 }
 
-export default App;
+export default () => <Provider store={store}><App /></Provider>;
