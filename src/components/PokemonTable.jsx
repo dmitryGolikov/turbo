@@ -1,12 +1,9 @@
 import React from 'react';
 import PokemonRow from  "../components/PokemonRow";
-import { useSelector, useDispatch } from 'react-redux';
-
+import store from "../store";
+import { observer } from 'mobx-react';
 
 const PokemonTable = () => {
-    const pokemon = useSelector(state => state.pokemon);
-    const filter = useSelector(state => state.filter);
-    const dispatch = useDispatch();
     return (
         <table width="100%">
     <thead>
@@ -16,14 +13,12 @@ const PokemonTable = () => {
       </tr>
     </thead>
     <tbody>
-      {pokemon
-        .splice(0, 20)
-        .filter(pokemon => pokemon.name.english.toLowerCase().includes(filter)).map(pokemon => (
-        <PokemonRow key={[pokemon.id, pokemon.name].join(".")} pokemon={pokemon} onClick={ (pokemon) => dispatch({type: "SET_SELECTED_POKEMON", payload: pokemon}) } />
+      {store.filteredPokemon.map(pokemon => (
+        <PokemonRow key={[pokemon.id, pokemon.name].join(".")} pokemon={pokemon} onClick={ (pokemon) => store.setSelectedPokemon(pokemon) } />
       ))}
     </tbody>
   </table>
     )
 }
     
-export default PokemonTable;
+export default observer(PokemonTable);

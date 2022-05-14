@@ -1,10 +1,11 @@
 import React from 'react';
 import PokemonType from '../PokemonType';
-import { useSelector } from 'react-redux';
+import store from '../store';
+import { observer } from 'mobx-react';
 
 
 const PokemonInfo = () => {
-    const selectedPokemon = useSelector(state => state.selectedPokemon);    
+  const selectedPokemon = store.selectedPokemon;
     return selectedPokemon ? (
         <div>
       <h2>{selectedPokemon.name.english}</h2>
@@ -25,4 +26,4 @@ const PokemonInfo = () => {
 }
 PokemonInfo.propTypes = PokemonType.isRequired;
 
-  export default PokemonInfo;
+  export default observer(PokemonInfo);

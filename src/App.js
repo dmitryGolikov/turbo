@@ -4,36 +4,37 @@ import PokemonInfo from './components/PokemonInfo';
 import PokemonFilter from './components/PokemonFilter';
 import PokemonTable from './components/PokemonTable';
 import { CssBaseline } from '@mui/material';
-import { createStore } from 'redux';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+// import useStore from './store';
 
-const pokemonReducer = (state = {
-  pokemon: [],
-  filter: "",
-  selectedPokemon: null,
-}, action) => {
-  switch(action.type) {
-    case 'SET_FILTER':
-      return {
-        ...state,
-        filter: action.payload
-      }
-    case 'SET_POKEMON':
-      return {
-        ...state,
-        pokemon: action.payload
-      }      
-    case 'SET_SELECTED_POKEMON':
-      return {
-        ...state,
-        selectedPokemon: action.payload
-      }
-      default:
-        throw new Error("Unhandled action type");
-    }
-}
+// const pokemonReducer = (state = {
+//   pokemon: [],
+//   filter: "",
+//   selectedPokemon: null,
+// }, { type, payload }) => {
+//   switch(type) {
+//     case 'SET_FILTER':
+//       return {
+//         ...state,
+//         filter: payload
+//       }
+//     case 'SET_POKEMON':
+//       return {
+//         ...state,
+//         pokemon: payload
+//       }      
+//     case 'SET_SELECTED_POKEMON':
+//       return {
+//         ...state,
+//         selectedPokemon: payload
+//       }
+//       default:
+//         return state;
+//     }
+// }
 
-const store = createStore(pokemonReducer);
+// const store = configureStore({
+//   reducer: pokemonReducer
+// });
 
 const Title = styled.h1`
   color: red;
@@ -58,21 +59,21 @@ function App() {
   //   filter: "",
   //   selectedPokemon: null
   // });
-  const dispatch = useDispatch();
-  const pokemon = useSelector(state => state.pokemon);
+  // const dispatch = useDispatch();
+  // const pokemon = useSelector(state => state.pokemon);
+  // const pokemon = useStore(state => state.pokemon);
+  // const setPokemon = useStore(state => state.setPokemon);
 
-  React.useEffect(() => {
-    fetch("http://localhost:3000/turbo/pokemon.json")
-    .then(resp => resp.json())
-    .then(data => dispatch({
-      type: 'SET_POKEMON', 
-      payload: data}))
-    .catch(error => (console.log(error)))
-  }, []);
+  // React.useEffect(() => {
+  //   fetch("http://localhost:3000/turbo/pokemon.json")
+  //   .then(resp => resp.json())
+  //   .then(setPokemon)
+  //   .catch(error => (console.log(error)))
+  // }, []);
 
-  if(!pokemon) {
-    return <div>Loading data</div>
-  }
+  // if(!pokemon) {
+  //   return <div>Loading data</div>
+  // }
 
   return (
       <PageContainer>
@@ -91,4 +92,5 @@ function App() {
   );
 }
 
-export default () => <Provider store={store}><App /></Provider>;
+//export default () => <Provider store={store}><App /></Provider>;
+export default App;

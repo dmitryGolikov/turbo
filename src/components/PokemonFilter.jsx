@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from "@emotion/styled";
-import { useSelector, useDispatch } from 'react-redux';
+import store from '../store';
+import { observer } from 'mobx-react';
 
 const Input = styled.input`
   width: 100%;
@@ -10,15 +11,13 @@ const Input = styled.input`
 
 
 const PokemonFilter = () => {
-    const filter = useSelector(state => state.filter);
-    const dispatch = useDispatch();
     return (
         <Input 
             type='text'
-            value={filter}
-            onChange={(event) => dispatch({type: "SET_FILTER", payload: event.target.value})}
+            value={store.filter}
+            onChange={(event) => store.setFilter(event.target.value)}
         />
     )
 }
 
-export default PokemonFilter;
+export default observer(PokemonFilter);
